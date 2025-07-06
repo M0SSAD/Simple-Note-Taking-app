@@ -1,0 +1,27 @@
+{
+  "canisters": {
+    "note_taking_backend": {
+      "candid": "src/note_taking_backend/note_taking_backend.did",
+      "package": "note_taking_backend",
+      "type": "rust"
+    },
+    "note_taking_frontend": {
+      "dependencies": [
+        "note_taking_backend"
+      ],
+      "source": [
+        "src/note_taking_frontend/dist"
+      ],
+      "type": "assets",
+      "workspace": "note_taking_frontend"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}

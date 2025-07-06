@@ -1,0 +1,12 @@
+type Note = record {
+  id: nat64;
+  title: text;
+  content: text;
+};
+
+service : {
+  "create": (text, text) -> (variant { Ok: text; Err: text });
+  "get_notes": () -> (vec Note) query;
+  "edit": (nat64, text, text) -> (variant { Ok: text; Err: text });
+  "delete": (nat64) -> (variant { Ok: text; Err: text });
+}

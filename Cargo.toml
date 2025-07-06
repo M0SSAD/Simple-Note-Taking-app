@@ -1,0 +1,5 @@
+[workspace]
+members = [
+    "src/note_taking_backend"
+]
+resolver = "2"
