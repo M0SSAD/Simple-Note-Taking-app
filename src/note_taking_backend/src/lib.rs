@@ -10,7 +10,7 @@ use std::{borrow::Cow, cell::RefCell};
 type Memory = VirtualMemory<DefaultMemoryImpl>;
 type IdCell = Cell<u64, Memory>;
 
-#[derive(candid::CandidType, Clone, Serialize, Deserialize, Default)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 struct Note {
     id: u64,
     title: String,
@@ -100,7 +100,7 @@ fn delete(id: u64) -> Result<String, String> {
         let mut notes: Vec<_> = store.iter().map(|(_, note)| note.clone()).collect();
         notes.sort_by_key(|note| note.id);
 
-        // Manually remove all keys (instead of store.clear())
+        // Manually remove all keys
         let keys_to_remove: Vec<u64> = store.iter().map(|(k, _)| k).collect();
         for key in keys_to_remove {
             store.remove(&key);
