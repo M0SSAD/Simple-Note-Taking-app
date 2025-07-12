@@ -432,7 +432,7 @@ export default function NotesApp() {
 
         <div className="text-center mt-16">
           <div className="inline-block bg-white/30 backdrop-blur-sm rounded-full px-6 py-3 border border-white/50">
-            <p className="text-gray-600 font-medium">Built on the Internet Computer Protocol 🚀</p>
+            <p className="text-gray-600 font-medium">Mossad ElMahgob</p>
           </div>
         </div>
       </div>
