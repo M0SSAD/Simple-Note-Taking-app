@@ -40,7 +40,7 @@ By leveraging the Internet Computer, your data is:
 
 - [Rust](https://www.rust-lang.org/tools/install)
 - [Node.js](https://nodejs.org/)
-- [DFX] "DFX_VERSION=0.27.0 sh -ci "$(curl -fsSL https://sdk.dfinity.org/install.sh)"
+- [IC CDK] -> Type This Command into the terminal [sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"]
 
 
 ---
