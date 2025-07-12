@@ -5,12 +5,13 @@ use ic_stable_structures::{
     memory_manager::{MemoryId, MemoryManager, VirtualMemory},
     Cell, DefaultMemoryImpl, StableBTreeMap, Storable,
 };
+use candid::CandidType;
 use std::{borrow::Cow, cell::RefCell};
 
 type Memory = VirtualMemory<DefaultMemoryImpl>;
 type IdCell = Cell<u64, Memory>;
 
-#[derive(Clone, Serialize, Deserialize, Debug)]
+#[derive(Clone, Serialize, Deserialize, Debug, CandidType)]
 struct Note {
     id: u64,
     title: String,

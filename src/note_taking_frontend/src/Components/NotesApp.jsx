@@ -9,6 +9,8 @@ export default function NotesApp() {
   const [editingNote, setEditingNote] = useState(null);
   const [formData, setFormData] = useState({ title: "", content: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showAllNotes, setShowAllNotes] = useState(false);
+  const [showNoteIds, setShowNoteIds] = useState(false);
   const noteRefs = useRef({});
 
   useEffect(() => {
@@ -217,7 +219,7 @@ export default function NotesApp() {
           <p className="text-gray-600">Decentralized note-taking on the Internet Computer</p>
         </div>
 
-        <div className="mb-6 flex justify-center">
+        <div className="mb-6 flex justify-center gap-4 flex-wrap">
           <button
             onClick={startCreating}
             disabled={isSubmitting}
@@ -225,6 +227,24 @@ export default function NotesApp() {
           >
             <Plus size={20} /> Create New Note
           </button>
+          
+          {notes.length > 0 && (
+            <>
+              <button
+                onClick={() => setShowAllNotes(!showAllNotes)}
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 shadow-lg"
+              >
+                {showAllNotes ? "Show Last Note Only" : "Show All Notes"}
+              </button>
+              
+              <button
+                onClick={() => setShowNoteIds(!showNoteIds)}
+                className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 shadow-lg"
+              >
+                {showNoteIds ? "Hide IDs" : "Show IDs"}
+              </button>
+            </>
+          )}
         </div>
 
         {showForm && (
@@ -289,8 +309,17 @@ export default function NotesApp() {
             <p className="text-gray-500 text-lg">No notes yet. Create your first note!</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {notes.map((note) => (
+          <>
+            {!showAllNotes && notes.length > 1 && (
+              <div className="text-center mb-4">
+                <p className="text-gray-600 bg-blue-50 p-3 rounded-lg">
+                  Showing latest note ({notes.length} total notes available)
+                </p>
+              </div>
+            )}
+            <div className="space-y-4">
+              {/* Display logic: show all notes or just the last one */}
+              {(showAllNotes ? notes : notes.slice(-1)).map((note) => (
               <div 
                 key={note.id} 
                 ref={el => noteRefs.current[note.id] = el}
@@ -316,10 +345,13 @@ export default function NotesApp() {
                   </div>
                 </div>
                 <p className="text-gray-600 mt-2 whitespace-pre-wrap">{note.content}</p>
-                <div className="text-sm text-gray-400 mt-4">Note ID: {note.id}</div>
+                {showNoteIds && (
+                  <div className="text-sm text-gray-400 mt-4">Note ID: {note.id}</div>
+                )}
               </div>
             ))}
-          </div>
+            </div>
+          </>
         )}
 
         <div className="text-center mt-12 text-gray-500">
