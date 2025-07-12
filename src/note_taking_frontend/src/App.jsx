@@ -1,11 +1,12 @@
 import React from 'react';
+import { AuthProvider } from './contexts/AuthContext';
 import NotesApp from './Components/NotesApp';
 
 function App() {
   return (
-    <div className="App">
+    <AuthProvider>
       <NotesApp />
-    </div>
+    </AuthProvider>
   );
 }
 

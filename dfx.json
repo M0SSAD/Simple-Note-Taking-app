@@ -2,33 +2,35 @@
   "canisters": {
     "note_taking_backend": {
       "candid": "src/note_taking_backend/note_taking_backend.did",
-      "package": "note_taking_backend",
       "type": "rust",
-      "wasm": "target/wasm32-unknown-unknown/release/note_taking_backend.wasm"
+      "package": "note_taking_backend"
     },
     "note_taking_frontend": {
       "dependencies": [
         "note_taking_backend"
       ],
+      "frontend": {
+        "entrypoint": "src/note_taking_frontend/dist/index.html"
+      },
       "source": [
-        "src/note_taking_frontend/dist"
+        "src/note_taking_frontend/dist/"
       ],
-      "type": "assets",
-      "workspace": "note_taking_frontend"
+      "type": "assets"
     },
     "internet_identity": {
-      "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
       "type": "custom",
+      "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
+      "wasm": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_dev.wasm.gz",
       "specified_id": "rdmx6-jaaaa-aaaaa-aaadq-cai",
       "remote": {
+        "candid": "internet_identity.did",
         "id": {
           "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
         }
-      },
-      "wasm": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_dev.wasm.gz"
+      }
     }
   },
-   "defaults": {
+  "defaults": {
     "build": {
       "args": "",
       "packtool": ""

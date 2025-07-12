@@ -1,23 +1,11 @@
 {
-  "engines": {
-    "node": ">=16.0.0",
-    "npm": ">=7.0.0"
-  },
-  "name": "note_taking",
-  "scripts": {
-    "build": "npm run build --workspaces --if-present",
-    "prebuild": "npm run prebuild --workspaces --if-present",
-    "pretest": "npm run prebuild --workspaces --if-present",
-    "start": "npm start --workspaces --if-present",
-    "test": "npm test --workspaces --if-present"
-  },
-  "type": "module",
+  "name": "simple-note-taking-app",
+  "private": true,
   "workspaces": [
     "src/note_taking_frontend"
   ],
-  "devDependencies": {
-    "autoprefixer": "^10.4.21",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.11"
+  "scripts": {
+    "build": "npm run build --workspace=note_taking_frontend",
+    "start": "npm run start --workspace=note_taking_frontend"
   }
 }

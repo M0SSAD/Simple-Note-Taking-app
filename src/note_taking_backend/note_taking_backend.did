@@ -2,6 +2,7 @@ type Note = record {
   id: nat64;
   title: text;
   content: text;
+  owner: principal;
 };
 
 service : {
@@ -9,4 +10,6 @@ service : {
   "get_notes": () -> (vec Note) query;
   "edit": (nat64, text, text) -> (variant { Ok: text; Err: text });
   "delete": (nat64) -> (variant { Ok: text; Err: text });
+  "get_caller_principal": () -> (principal) query;
+  "is_user_authenticated": () -> (bool) query;
 }
