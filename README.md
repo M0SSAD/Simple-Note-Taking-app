@@ -40,22 +40,8 @@ By leveraging the Internet Computer, your data is:
 
 - [Rust](https://www.rust-lang.org/tools/install)
 - [Node.js](https://nodejs.org/)
+- [DFX] "DFX_VERSION=0.27.0 sh -ci "$(curl -fsSL https://sdk.dfinity.org/install.sh)"
 
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/M0SSAD/Simple-Note-Taking-app.git
-cd Simple-Note-Taking-app
-
-# Install frontend dependencies
-cd frontend
-npm install
-
-# Build and run the backend
-cd ../backend
-cargo run
-```
 
 ---
 
