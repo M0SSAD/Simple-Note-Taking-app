@@ -1,8 +1,112 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { AuthClient } from '@dfinity/auth-client';
-import { createActor, canisterId } from '../../../declarations/note_taking_backend';
+import { createActor } from '../../../declarations/note_taking_backend';
+import { canisterId } from '../../../declarations/note_taking_backend/index.js';
 
 const AuthContext = createContext();
+
+const network = process.env.DFX_NETWORK;
+const identityProvider =
+  network === 'ic'
+    ? 'https://identity.ic0.app' // Mainnet
+    : 'http://rdmx6-jaaaa-aaaaa-aaadq-cai.localhost:4943'; // Local
+
+export const AuthProvider = ({ children }) => {
+  const [authClient, setAuthClient] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [principal, setPrincipal] = useState('');
+  const [authenticatedActor, setAuthenticatedActor] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Initialize auth client
+  useEffect(() => {
+    initAuth();
+  }, []);
+
+  const initAuth = async () => {
+    try {
+      setIsLoading(true);
+      const client = await AuthClient.create();
+      setAuthClient(client);
+      
+      const isAuth = await client.isAuthenticated();
+      setIsAuthenticated(isAuth);
+      
+      if (isAuth) {
+        await updateActor(client);
+      }
+    } catch (error) {
+      console.error('Error initializing auth:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const updateActor = async (client = authClient) => {
+    if (!client) return;
+    
+    try {
+      const identity = client.getIdentity();
+      const actor = createActor(canisterId, {
+        agentOptions: {
+          identity
+        }
+      });
+      
+      setAuthenticatedActor(actor);
+      
+      // Get the principal
+      const principalResult = await actor.get_caller_principal();
+      setPrincipal(principalResult.toString());
+    } catch (error) {
+      console.error('Error updating actor:', error);
+    }
+  };
+
+  const login = async () => {
+    if (!authClient) return;
+    
+    try {
+      await authClient.login({
+        identityProvider,
+        onSuccess: async () => {
+          setIsAuthenticated(true);
+          await updateActor();
+        }
+      });
+    } catch (error) {
+      console.error('Error during login:', error);
+    }
+  };
+
+  const logout = async () => {
+    if (!authClient) return;
+    
+    try {
+      await authClient.logout();
+      setIsAuthenticated(false);
+      setPrincipal('');
+      setAuthenticatedActor(null);
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
+
+  const value = {
+    isAuthenticated,
+    principal,
+    authenticatedActor,
+    isLoading,
+    login,
+    logout
+  };
+
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -12,126 +116,5 @@ export const useAuth = () => {
   return context;
 };
 
-export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [authClient, setAuthClient] = useState(null);
-  const [identity, setIdentity] = useState(null);
-  const [principal, setPrincipal] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [authenticatedActor, setAuthenticatedActor] = useState(null);
 
-  // Use the correct Internet Identity canister URL for local development
-  const identityProvider = 'http://rdmx6-jaaaa-aaaaa-aaadq-cai.localhost:4943';
-
-  useEffect(() => {
-    initAuth();
-  }, []);
-
-  const initAuth = async () => {
-    try {
-      console.log('Initializing auth...');
-      console.log('Identity provider:', identityProvider);
-
-      const client = await AuthClient.create({
-        idleOptions: {
-          disableIdle: true,
-          disableDefaultIdleCallback: true
-        }
-      });
-      setAuthClient(client);
-
-      const isAuthenticated = await client.isAuthenticated();
-      console.log('Is authenticated:', isAuthenticated);
-      setIsAuthenticated(isAuthenticated);
-
-      if (isAuthenticated) {
-        const identity = client.getIdentity();
-        setIdentity(identity);
-        setPrincipal(identity.getPrincipal().toString());
-        
-        // Create authenticated actor with the correct canister ID
-        const actor = createActor(canisterId, {
-          agentOptions: {
-            identity,
-            host: 'http://localhost:4943',
-          },
-        });
-        setAuthenticatedActor(actor);
-        console.log('Authenticated actor created successfully');
-      }
-    } catch (error) {
-      console.error('Error initializing auth:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const login = async () => {
-    try {
-      if (!authClient) {
-        console.error('Auth client not initialized');
-        return;
-      }
-
-      console.log('Starting login...');
-
-      await authClient.login({
-        identityProvider,
-        maxTimeToLive: BigInt(7 * 24 * 60 * 60 * 1000 * 1000 * 1000), // 7 days
-        onSuccess: async () => {
-          console.log('Login successful');
-          const identity = authClient.getIdentity();
-          setIdentity(identity);
-          setPrincipal(identity.getPrincipal().toString());
-          setIsAuthenticated(true);
-          
-          // Create authenticated actor
-          const actor = createActor(canisterId, {
-            agentOptions: {
-              identity,
-              host: 'http://localhost:4943',
-            },
-          });
-          setAuthenticatedActor(actor);
-          console.log('Login complete, actor created');
-        },
-        onError: (error) => {
-          console.error('Login error:', error);
-        },
-      });
-    } catch (error) {
-      console.error('Login failed:', error);
-    }
-  };
-
-  const logout = async () => {
-    try {
-      if (authClient) {
-        await authClient.logout();
-        setIsAuthenticated(false);
-        setIdentity(null);
-        setPrincipal(null);
-        setAuthenticatedActor(null);
-        console.log('Logout successful');
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
-
-  const value = {
-    isAuthenticated,
-    identity,
-    principal,
-    isLoading,
-    authenticatedActor,
-    login,
-    logout,
-  };
-
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+  
